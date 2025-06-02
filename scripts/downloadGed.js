@@ -448,15 +448,41 @@ class Gedcom {
   }
   recsForPerson(indvId, person) {
     if (!person) return [];
-    const nameFormatter = (fullName) => {
-      // A poor man's version as the scraped name comes without any indictor
-      // thus, this will return "John James /III/" making "III" the last name
-      // As these GEDCOM files are just placeholders, to accelerate entry,
-      // I'm leaving this as is.
-      const words = fullName.split(" ");
-      const first = words.slice(0, -1).join(" ");
-      const last = words.slice(-1);
-      return `${first} /${last}/`;
+    const nameFormatter = (fullName = "") => {
+      // GEDCOM supports identifying the last name by surrounding it with '/'
+      // Given "Jane Desmond Doe", return "Jane Desmond /Doe/"
+      // This attempts to handle common suffixes and prefixes such as
+      // "Charles Mason Poyner Sr." => "Charles Mason /Poyner/ Sr."
+      // "Lt. Cmndr. Joseph Allen Jr" => "Lt. Cmndr. Joseph /Allen/ Jr" and
+      // "Eleanor Janega, PhD" => "Eleanor /Janega/, PhD"
+
+      // Handle military titles, academic titles, suffixes and last name
+      const titleRegex =
+        /^((?:Lt\.|Cpt\.|Col\.|Gen\.|Adm\.|Cmdr\.|Lt\. Cmdr\.|Dr\.|Mr\.|Mrs\.|Ms\.) )+/;
+      const suffixRegex =
+        /(,? (?:Sr|Jr|[IVX]+|PhD|MD|DDS|DVM|Esq|ESQ|LLD|JD)\.?)$/;
+
+      // Remove and store any suffix
+      const suffixMatch = fullName.match(suffixRegex);
+      const suffix = suffixMatch ? suffixMatch[1] : "";
+      let nameWithoutSuffix = fullName.replace(suffixRegex, "");
+
+      // TBD: Store prefixes and suffixes under 'NPFX' and 'NSFX'
+      // TBD: Store surname (lastName) under 'SURN'
+      // const titleMatch = nameWithoutSuffix.match(titleRegex);
+      // nameWithoutSuffix = nameWithoutSuffix.replace(titleRegex, '');
+
+      // Split remaining name into parts
+      const nameParts = nameWithoutSuffix.trim().split(" ");
+      const lastName = nameParts.pop(); // Last word is surname
+      const firstNames = nameParts.join(" ");
+
+      // Reconstruct name with surname in slashes and add suffix
+      const formattedName = firstNames
+        ? `${firstNames} /${lastName}/${suffix}`
+        : `/${lastName}/${suffix}`;
+
+      return formattedName.trim();
     };
 
     const recs = [];
@@ -551,12 +577,14 @@ class Gedcom {
     return recs;
   }
   gedSubmitter() {
+    const dateViewed = Gedcom.gedDate(this.family.source.dateViewed);
     return [
       "0 @SUB1@ SUBM",
-      "1 NAME JG Heithcock",
-      "1 ADDR 44 Westwind Rd",
-      "2 CONT Lafayette, CA 94549",
+      "1 NAME Download GEDCOM Chrome Extension",
+      "1 EMAIL jgheithcock@gmail.com",
       "1 WWW www.heithcock.com",
+      "1 CREA",
+      `2 DATE ${dateViewed}`,
     ];
   }
   gedFamilies() {
