@@ -1,0 +1,3 @@
+body:has(div[data-testid="conclusionDisplay:NAME"]) a#download_ged {
+    opacity: 1.0 !important
+}

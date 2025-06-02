@@ -1,0 +1,83 @@
+data-testid: #
+
+conclusionDisplay:NAME
+  conclusion-body
+conclusionDisplay:GENDER
+  conclusion-gender
+conclusionDisplay:BIRTH
+  conclusion-date
+  conclusion-place
+conclusionDisplay:DEATH
+  conclusion-date
+  conclusion-place
+conclusionDisplay:BURIEL
+  conclusion-date
+  conclusion-place
+  
+section-card-family
+  couple-persons (first and last are prefered spouses and parents)
+  children-person-list (first and last are prefered children and parents children (siblings))
+      
+
+document.querySelector('[data-testid="conclusionDisplay:NAME"]')
+
+
+el.querySelector('[data-testid="conclusionDisplay:NAME"] [data-testid="conclusion-body"]')
+
+document.querySelector('[data-testid="conclusionDisplay:NAME"] [data-testid="conclusion-body"]').innerText
+document.querySelector('[data-testid="conclusionDisplay:BIRTH"] [data-testid="conclusion-date"]').innerText
+document.querySelector('[data-testid="conclusionDisplay:BIRTH"] [data-testid="conclusion-place"]').innerText
+
+document.querySelectorAll('[data-testid="section-card-family"] ul[data-testid="couple-persons"')
+// Returns list of marriages with last being parents of preferred (first)
+
+So [0] is preferred couple, [a.length - 1] are the parents
+
+Inside a couple are four child divs:
+0: Man
+1: separator
+2: Woman
+3: Marriage
+
+For People (Man & Wife and children):
+fullName (Aka "Hannah Randall")
+lifespan (eg: "1680-1740")
+pid (eg. "LHJB-HLB")
+
+For Marriage:
+conclusion-date
+conclusion-place
+
+E.G.
+document.querySelectorAll('[data-testid="section-card-family"] ul[data-testid="couple-persons"')[0]
+.childNodes[3].querySelector('[data-testid="conclusion-date"]').innerText
+-> "about 1697"
+
+// children of family card
+children = document.querySelectorAll('[data-testid="section-card-family"] ul[data-testid="children-person-list"')[0]
+childNodes[0].querySelector('[data-testid="child-person"]')
+
+// parents children
+siblings = document.querySelectorAll('[data-testid="section-card-family"] ul[data-testid="children-person-list"')[1]
+
+// Desired output
+
+{
+  title: document.title,
+  url: document.URL,
+  vitals: {
+    name: "",
+    birth: {date: 1890, place: "nowhere"},
+    // ...
+  },
+  family_members: {
+    father: {
+      name: "Frank Jones",
+      lifespan: "1890-1990",
+      pid: "LHJB-HLB"
+    },
+    mother: {},
+    marriage: {},
+    siblings: []
+  }
+}
